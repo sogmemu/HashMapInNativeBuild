@@ -1,0 +1,123 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.freefair.gradle:lombok-plugin:${lombokVersion}")
+        classpath(group: 'org.graalvm.buildtools.native', name: 'org.graalvm.buildtools.native.gradle.plugin', version: '0.9.18')
+    }
+}
+
+apply plugin: "org.graalvm.buildtools.native"
+apply plugin: "java"
+apply plugin: "io.freefair.lombok"
+apply plugin: "io.spring.dependency-management"
+apply plugin: "org.springframework.boot"
+apply plugin: "maven-publish"
+
+
+group = 'test'
+sourceCompatibility = targetCompatibility = 17
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+    implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus'
+    implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave'
+    implementation group: 'io.zipkin.reporter2', name: 'zipkin-reporter-brave'
+
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+
+    runtimeOnly group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.9.19'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-properties-migrator'
+
+
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testImplementation group: 'com.fasterxml.jackson.module', name: 'jackson-modules-java8', version: '2.14.0'
+    testImplementation group: 'io.projectreactor', name: 'reactor-test'
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+compileJava {
+    options.warnings = true
+    options.deprecation = true
+    options.compilerArgs += ["-Xlint:unchecked"]
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    dependsOn test
+
+    from('src/main/resources') {
+        include '*.json'
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact bootJar
+        }
+    }
+}
+
+nativeCompile {
+    //dependsOn test
+}
+
+processTestAot {
+   enabled = false
+}
+
+
+graalvmNative {
+   // toolchainDetection = true
+    metadataRepository {
+        enabled = true
+    }
+    binaries {
+        main {
+            imageName = "app"
+            verbose = true
+            buildArgs.add('--add-opens=java.base/java.nio=ALL-UNNAMED')
+            buildArgs.add('--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED')
+            buildArgs.add('--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED')
+             buildArgs.add('--trace-class-initialization=ch.qos.logback.classic.Logger')
+            buildArgs.add('--trace-object-instantiation=ch.qos.logback.core.AsyncAppenderBase$Worker')
+            buildArgs.add('--initialize-at-build-time=org.slf4j.LoggerFactory,ch.qos.logback')
+            buildArgs.add('--initialize-at-run-time=io.netty')
+            buildArgs.add('-H:+PrintClassInitialization')
+            buildArgs.add('-H:+ReportExceptionStackTraces')
+            // hazelcast specific based on the log information
+            buildArgs.add('--add-opens=java.base/java.lang=ALL-UNNAMED')
+            buildArgs.add('--add-opens=java.base/sun.nio.ch=ALL-UNNAMED')
+            buildArgs.add('--add-opens=java.management/sun.management=ALL-UNNAMED')
+            buildArgs.add('--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED')
+
+        }
+    }
+}
