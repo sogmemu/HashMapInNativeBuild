@@ -1,12 +1,6 @@
 package test.properties;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,40 +8,85 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Validated
-@Data
+
 @ConfigurationProperties(prefix = "test-props")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TestProperties {
 
     @NotEmpty
-    HashMap<String, PermissionsConfig> datagroups;
+    private HashMap<String, PermissionsConfig> datagroups;
 
 
     // Referenze this classes also here, will create needed hints
     //PermissionsConfig testConfig;
     //Permission testPermission;
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class PermissionsConfig {
-
-        Permission read;
-        Permission history;
+    public HashMap<String, PermissionsConfig> getDatagroups() {
+        return datagroups;
     }
 
-    @Data
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Permission {
-        String code;
-        String requiredCode;
-        boolean simulation = true;
-        ArrayList<String> urlPattern;
+    public void setDatagroups(HashMap<String, PermissionsConfig> datagroups) {
+        this.datagroups = datagroups;
+    }
 
+
+    public static class PermissionsConfig {
+
+        private Permission read;
+        private Permission history;
+
+        public Permission getRead() {
+            return read;
+        }
+
+        public void setRead(Permission read) {
+            this.read = read;
+        }
+
+        public Permission getHistory() {
+            return history;
+        }
+
+        public void setHistory(Permission history) {
+            this.history = history;
+        }
+    }
+
+    public static class Permission {
+        private String code;
+        private String requiredCode;
+        private boolean simulation = true;
+        private ArrayList<String> urlPattern;
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getRequiredCode() {
+            return requiredCode;
+        }
+
+        public void setRequiredCode(String requiredCode) {
+            this.requiredCode = requiredCode;
+        }
+
+        public boolean isSimulation() {
+            return simulation;
+        }
+
+        public void setSimulation(boolean simulation) {
+            this.simulation = simulation;
+        }
+
+        public ArrayList<String> getUrlPattern() {
+            return urlPattern;
+        }
+
+        public void setUrlPattern(ArrayList<String> urlPattern) {
+            this.urlPattern = urlPattern;
+        }
     }
 }
