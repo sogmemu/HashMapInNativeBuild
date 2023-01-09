@@ -30,13 +30,6 @@ repositories {
 dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-
-    implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus'
-    implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave'
-    implementation group: 'io.zipkin.reporter2', name: 'zipkin-reporter-brave'
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 

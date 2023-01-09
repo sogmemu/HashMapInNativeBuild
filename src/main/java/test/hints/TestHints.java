@@ -14,6 +14,8 @@ public class TestHints implements RuntimeHintsRegistrar {
     @Override
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         addAll(hints, TestProperties.class);
+        addAll(hints, TestProperties.PermissionsConfig.class);
+        addAll(hints, TestProperties.Permission.class);
         addAll(hints, HashMap.class);
     }
 

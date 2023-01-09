@@ -24,6 +24,8 @@ public class TestRunner implements ApplicationRunner {
             throw new RuntimeException("property not binded");
         }
 
+        log.info("booelan {} ", testProperties.getDatagroups().get("data").getRead().isSimulation());
+
         log.info("property {}", testProperties);
 
     }
