@@ -33,14 +33,6 @@ dependencies {
 
     annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 
-    runtimeOnly group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.9.19'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-properties-migrator'
-
-
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testImplementation group: 'com.fasterxml.jackson.module', name: 'jackson-modules-java8', version: '2.14.0'
-    testImplementation group: 'io.projectreactor', name: 'reactor-test'
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")

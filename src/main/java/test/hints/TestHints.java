@@ -1,8 +1,10 @@
 package test.hints;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeReference;
 import test.properties.TestProperties;
 
 import java.lang.reflect.Constructor;
@@ -10,20 +12,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+@Slf4j
 public class TestHints implements RuntimeHintsRegistrar {
     @Override
     public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
         addAll(hints, TestProperties.class);
         addAll(hints, TestProperties.PermissionsConfig.class);
         addAll(hints, TestProperties.Permission.class);
-        addAll(hints, HashMap.class);
+
     }
 
-    private void addAll(RuntimeHints hints, Class<?> clazz) {
+    private static void addAll(RuntimeHints hints, Class<?> clazz) {
         addAll(hints, clazz, true);
     }
 
-    private void addAll(RuntimeHints hints, Class<?> clazz, boolean withInterfacesAndSuperClasses) {
+    private static void addAll(RuntimeHints hints, Class<?> clazz, boolean withInterfacesAndSuperClasses) {
 
         if (clazz == null) {
             return;
@@ -44,7 +47,7 @@ public class TestHints implements RuntimeHintsRegistrar {
         addAll(hints, clazz.getSuperclass());
     }
 
-    private void addAllMethods(RuntimeHints hints, Class<?> clazz) {
+    private static void addAllMethods(RuntimeHints hints, Class<?> clazz) {
         var methods = clazz.getDeclaredMethods();
         for (Method method: methods) {
             hints.reflection().registerMethod(method, ExecutableMode.INVOKE);
